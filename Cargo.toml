@@ -1,0 +1,20 @@
+[package]
+name = "megumin"
+version = "0.1.0"
+license = "MIT"
+authors = ["Flat <flat@imo.uto.moe>"]
+
+[dependencies]
+log = "*"
+json = "*"
+preferences = "*"
+chrono = "*"
+typemap = "*"
+[dependencies.kitsu_io]
+version = "*"
+git = "https://github.com/zeyla/kitsu.rs.git"
+
+[dependencies.serenity]
+version = "*"
+git = "https://github.com/zeyla/serenity.rs.git"
+features = ["framework", "cache", "voice"]
