@@ -1,6 +1,6 @@
 # Megumin
 
-A general purpose discord bot built with the serenity library. Programmed in Rust and made with love.
+A general purpose discord bot built with the [serenity](https://github.com/zeyla/serenity) library. Programmed in Rust and made with love.
 
 ## Commands
 
