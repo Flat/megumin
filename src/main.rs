@@ -74,6 +74,11 @@ fn main() {
                         .min_args(1)
                         .desc("Searches kitsu.io for the specified anime")
                 })
+                .command("manga", |c| {
+                    c.exec(commands::weeb::manga)
+                        .min_args(1)
+                        .desc("Searches kitsu.io for the specified manga")
+                })
             })
             .group("General", |g| {
                 g.command("about", |c| {
