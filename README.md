@@ -7,7 +7,7 @@ A general purpose discord bot built with the [serenity](https://github.com/zeyla
 | Weeb | Administration | General |
 | :---: | :---: | :---: |
 | anime | nogame | about |
-| | setowner | help |
+| manga | setowner | help |
 | | owner | | info|
 | | disown | | |
 | | setgame | | | 
