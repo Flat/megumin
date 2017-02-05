@@ -8,8 +8,7 @@ command!(about(context) {
   let _ = context.send_message(|m| m
       .embed(|e| e
         .url("https://github.com/flat/megumin")
-        // TODO: Change colour to Megumin's red robe color
-        .colour(Colour::fabled_pink())
+        .colour(Colour::new(0xC4444E))
         .description("A general purpose discord bot built with the serenity library. \
          Programmed in Rust and made with love.")
         .title("Megumin")

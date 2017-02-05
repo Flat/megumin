@@ -32,6 +32,7 @@ command!(anime(context, _message, args) {
         Some(x) => x.to_string(),
         None => "N/A".to_owned(),
       };
+      let anime_start_date = anime.attributes.start_date.to_owned();
       let anime_end_date = match anime.attributes.end_date {
         Some(ref x) => x.to_owned(),
         None => "N/A".to_owned(),
@@ -39,6 +40,11 @@ command!(anime(context, _message, args) {
       let anime_cover_image = match anime.attributes.cover_image {
         Some(ref x) => x.original.to_owned().unwrap_or("N/A".to_owned()),
         None => "N/A".to_owned(),
+      };
+
+      let anime_poster_image = match anime.attributes.poster_image.largest(){
+        Some(x) => x,
+        None => "N/A",
       };
 
       // Update the message with our new found knowledge
@@ -49,11 +55,11 @@ command!(anime(context, _message, args) {
           a = a.icon_url("https://kitsu.io/android-chrome-192x192.png");
           a
         })
-        //lazily make a link to the found anime
-        .url(&format!("https://kitsu.io/anime/{}", anime.id))
+        .url(&anime.url())
         .colour(Colour::from_rgb(51,37,50))
         .description(&anime_synopsis)
         .title(&format!("{}", &anime_title))
+        .thumbnail(anime_poster_image)
         .field(|f| f
           .inline(true)
           .name("Average Rating")
@@ -73,6 +79,11 @@ command!(anime(context, _message, args) {
           .inline(true)
           .name("Episodes")
           .value(&anime_episode_count)
+          )
+        .field(|f| f
+          .inline(true)
+          .name("Start Date")
+          .value(&anime_start_date)
           )
         .field(|f| f
           .inline(true)
