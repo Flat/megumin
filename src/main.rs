@@ -4,6 +4,7 @@ extern crate preferences;
 extern crate chrono;
 extern crate typemap;
 extern crate kitsu_io;
+extern crate regex;
 
 use serenity::Client;
 use serenity::ext::framework::help_commands;

@@ -8,6 +8,7 @@ authors = ["Flat <flat@imo.uto.moe>"]
 preferences = "*"
 chrono = "*"
 typemap = "*"
+regex = "*"
 [dependencies.kitsu_io]
 version = "*"
 git = "https://github.com/zeyla/kitsu.rs.git"
