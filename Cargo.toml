@@ -1,6 +1,6 @@
 [package]
 name = "megumin"
-version = "0.1.0"
+version = "0.1.1"
 license = "MIT"
 authors = ["Flat <flat@imo.uto.moe>"]
 
