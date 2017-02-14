@@ -19,3 +19,8 @@ pub fn owner_check(_: &mut Context, message: &Message) -> bool {
         return false;
     }
 }
+
+// TODO: implement a check for disabled commands through user preferences
+pub fn enabled_check(_: &mut Context, message: &Message) -> bool {
+    return true;
+}
