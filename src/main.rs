@@ -54,7 +54,7 @@ fn main() {
         // Add the uptime as the time we connected succesfully
         let mut data = context.data.lock().unwrap();
         let uptime = data.get_mut::<Uptime>().unwrap();
-        uptime.entry(String::from("boot")).or_insert_with(| | {UTC::now()});
+        uptime.entry(String::from("boot")).or_insert_with(|| UTC::now());
     });
 
     // Setup bot framework with supported commands
@@ -71,20 +71,20 @@ fn main() {
             })
             .group("Weeb", |g| {
                 g.command("anime", |c| {
-                    c.exec(commands::weeb::anime)
-                        .min_args(1)
-                        .desc("Searches kitsu.io for the specified anime")
-                })
-                .command("manga", |c| {
-                    c.exec(commands::weeb::manga)
-                        .min_args(1)
-                        .desc("Searches kitsu.io for the specified manga")
-                })
-                .command("kitsuprofile", |c| {
-                    c.exec(commands::weeb::kitsu_user)
-                     .min_args(1)
-                     .desc("Seaches kitsu.io for the specified user")
-                })
+                        c.exec(commands::weeb::anime)
+                            .min_args(1)
+                            .desc("Searches kitsu.io for the specified anime")
+                    })
+                    .command("manga", |c| {
+                        c.exec(commands::weeb::manga)
+                            .min_args(1)
+                            .desc("Searches kitsu.io for the specified manga")
+                    })
+                    .command("kitsuprofile", |c| {
+                        c.exec(commands::weeb::kitsu_user)
+                            .min_args(1)
+                            .desc("Seaches kitsu.io for the specified user")
+                    })
             })
             .group("General", |g| {
                 g.command("about", |c| {
@@ -119,6 +119,16 @@ fn main() {
                     .command("nogame", |c| {
                         c.exec(commands::admin::no_game)
                             .check(util::owner_check)
+                    })
+            })
+            .group("Audio", |g| {
+                g.command("play", |c| {
+                        c.exec(commands::audio::play)
+                            .desc("Plays the given youtube or soundcloud url")
+                    })
+                    .command("stop", |c| {
+                        c.exec(commands::audio::stop)
+                            .desc("stops the currently playing music")
                     })
             })
     });

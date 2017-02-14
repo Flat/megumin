@@ -4,10 +4,10 @@ A general purpose discord bot built with the [serenity](https://github.com/zeyla
 
 ## Commands
 
-| Weeb | Administration | General |
-| :---: | :---: | :---: |
-| anime | nogame | about |
-| manga | setowner | help |
+| Weeb | Administration | General | Audio |
+| :---: | :---: | :---: | :---: |
+| anime | nogame | about | play |
+| manga | setowner | help | stop |
 | kitsuprofile | owner | info |
 | | disown | | |
 | | setgame | | | 
