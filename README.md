@@ -8,7 +8,7 @@ A general purpose discord bot built with the [serenity](https://github.com/zeyla
 | :---: | :---: | :---: |
 | anime | nogame | about |
 | manga | setowner | help |
-| | owner | | info|
+| kitsuprofile | owner | | info|
 | | disown | | |
 | | setgame | | | 
 

@@ -2,11 +2,11 @@ use kitsu_io;
 use serenity::utils::Colour;
 
 // Searches kitsu.io for a passed string
-command!(anime(context, _message, args) {
+command!(anime(_context, message, args) {
   // Accept all arguments as one search string
   let search = args.join(" ");
   // Let the user know we're working on it.
-  let mut msg = match context.say(&format!("Searching kitsu.io for {}", &search)){
+  let mut msg = match message.channel_id.say(&format!("Searching kitsu.io for {}", &search)){
     Ok(msg) => msg,
     Err(_) => return Ok(()),
   };
@@ -44,8 +44,12 @@ command!(anime(context, _message, args) {
         None => "N/A".to_owned(),
       };
       let anime_cover_image = match anime.attributes.cover_image {
-        Some(ref x) => x.original.to_owned().unwrap_or("N/A".to_owned()),
-        None => "N/A".to_owned(),
+        Some(ref x) => 
+          match x.largest(){
+            Some(y) => y,
+            None => "N/A",
+          },
+        None => "N/A",
       };
 
       let anime_poster_image = match anime.attributes.poster_image.largest(){
@@ -101,8 +105,11 @@ command!(anime(context, _message, args) {
           .name("Status")
           .value(anime_airing_status_name)
           );
-        if &anime_cover_image != "N/A" {
+        if anime_cover_image != "N/A" {
           e = e.image(&anime_cover_image);
+        }
+        if anime_poster_image != "N/A" {
+          e = e.thumbnail(anime_poster_image);
         }
         e}){
         Ok(msg) => msg,
@@ -127,11 +134,11 @@ command!(anime(context, _message, args) {
 
 
 // Search kitsu.io for a manga
-command!(manga(context, _message, args){
+command!(manga(_context, message, args){
    // Accept all arguments as one search string
   let search = args.join(" ");
   // Let the user know we're working on it.
-  let mut msg = match context.say(&format!("Searching kitsu.io for {}", &search)){
+  let mut msg = match message.channel_id.say(&format!("Searching kitsu.io for {}", &search)){
     Ok(msg) => msg,
     Err(_) => return Ok(()),
   };
@@ -141,24 +148,43 @@ command!(manga(context, _message, args){
     if let Some(manga) = result.data.get(0) {
       // Parse all the attributes to their own variables (A large amount of the API returns are optional)
       let manga_title = &manga.attributes.canonical_title;
-      let manga_synopsis = &manga.attributes.synopsis;
+      let mut manga_synopsis = manga.attributes.synopsis.to_owned();
+      if &manga_synopsis == "" {
+        manga_synopsis = "N/A".to_owned();
+      }
       let manga_type = &manga.attributes.kind;
       let manga_average_rating = match manga.attributes.average_rating {
         // Round rating to hundredths
         Some(x) => (((x * 100_f64).round())/100_f64).to_string(),
         None => "N/A".to_owned(),
       };
-      let manga_serialization = &manga.attributes.serialization;
-      let manga_volume_count = &manga.attributes.volume_count.to_string();
-      let manga_chapter_count = &manga.attributes.chapter_count.to_string();
-      let manga_start_date = &manga.attributes.start_date;
+      let manga_serialization = match manga.attributes.serialization {
+        Some(ref x) => x.to_owned(),
+        None => "N/A".to_owned(),
+      };
+      let manga_volume_count = match manga.attributes.volume_count {
+        Some(x) => x.to_string(),
+        None => "N/A".to_owned(),
+      };
+      let manga_chapter_count = match manga.attributes.chapter_count{
+        Some(x) => x.to_string(),
+        None => "N/A".to_owned(),
+      };
+      let manga_start_date = match manga.attributes.start_date {
+        Some(ref x) => x.to_owned(),
+        None => "N/A".to_owned(),
+      };
       let manga_end_date = match manga.attributes.end_date {
         Some(ref x) => x.to_owned(),
         None => "N/A".to_owned(),
       };
       let manga_cover_image = match manga.attributes.cover_image {
-        Some(ref x) => x.original.to_owned().unwrap_or("N/A".to_owned()),
-        None => "N/A".to_owned(),
+        Some(ref x) => 
+          match x.largest() {
+            Some(y) => y,
+            None => "N/A",
+          },
+        None => "N/A",
       };
 
       let manga_poster_image = match manga.attributes.poster_image.largest(){
@@ -178,7 +204,6 @@ command!(manga(context, _message, args){
         .colour(Colour::from_rgb(51,37,50))
         .description(&manga_synopsis)
         .title(&manga_title)
-        .thumbnail(manga_poster_image)
         .field(|f| f
           .inline(true)
           .name("Average Rating")
@@ -186,7 +211,7 @@ command!(manga(context, _message, args){
           )
         .field(|f| f
           .inline(true)
-          .name("Manga Type")
+          .name("Type")
           .value(&format!("{:?}", manga_type))
           )
         .field(|f| f
@@ -197,25 +222,143 @@ command!(manga(context, _message, args){
         .field(|f| f
           .inline(true)
           .name("Volumes")
-          .value(manga_volume_count)
+          .value(&manga_volume_count)
           )
         .field(|f| f
           .inline(true)
           .name("Chapters")
-          .value(manga_chapter_count)
+          .value(&manga_chapter_count)
           )
         .field(|f| f
           .inline(true)
           .name("Start Date")
-          .value(manga_start_date)
+          .value(&manga_start_date)
           )
         .field(|f| f
           .inline(true)
           .name("End Date")
           .value(&manga_end_date)
           );
-        if &manga_cover_image != "N/A" {
+        if manga_cover_image != "N/A" {
           e = e.image(&manga_cover_image);
+        }
+        if manga_poster_image != "N/A" {
+          e = e.thumbnail(manga_poster_image)
+        }
+        e}){
+        Ok(msg) => msg,
+        Err(why) => {
+          // Something went wrong creating the embed
+          println!("{:?}", why);
+          let _ = msg.edit("Failed to submit embedded message.", |e| e);
+          return Ok(());
+        },
+      };
+
+    } else {
+      // Something went wrong getting the first result
+      let _ = msg.edit("Failed to retrieve information.", |e| e);
+    }
+}
+  else {
+    // Something went wrong with the request to the api
+    let _ = msg.edit("Failed to retrieve information.", |e| e);
+  }
+});
+
+// Search kitsu.io for a user
+command!(kitsu_user(_context, message, args){
+   // Accept all arguments as one search string
+  let search = args.join(" ");
+  // Let the user know we're working on it.
+  let mut msg = match message.channel_id.say(&format!("Searching kitsu.io for {}", &search)){
+    Ok(msg) => msg,
+    Err(_) => return Ok(()),
+  };
+  // Make the request to the api and make sure it's Ok
+  if let Ok(result) = kitsu_io::search_users(|f| f.filter("query", &search)){
+    // Grab the first result. 
+    if let Some(user) = result.data.get(0) {
+      // Parse all the attributes to their own variables (A large amount of the API returns are optional)
+      let user_name = &user.attributes.name;
+      let mut user_bio = user.attributes.bio.to_owned();
+      if &user_bio == "" {
+        user_bio = "N/A".to_owned();
+      }
+      let mut user_about = user.attributes.about.to_owned();
+      if &user_about == "" {
+        user_about = "N/A".to_owned();
+      }
+      let user_birthday = match user.attributes.birthday {
+        Some(ref x) => x.to_owned(),
+        None => "N/A".to_owned(),
+      };
+      let user_cover_image = match user.attributes.cover_image {
+        Some(ref x) => 
+          match x.largest() {
+            Some(y) => y,
+            None => "N/A",
+          },
+        None => "N/A",
+      };
+      let user_avatar = match user.attributes.avatar {
+        Some(ref x) => 
+          match x.largest() {
+            Some(y) => y,
+            None => "N/A",
+          },
+        None => "N/A",
+      };
+      let user_followers = user.attributes.followers_count.to_string();
+      let user_following = user.attributes.following_count.to_string();
+      let user_gender = match user.attributes.gender {
+        Some(ref x) => x.to_owned(),
+        None => "N/A".to_owned(),
+      };
+
+
+      // Update the message with our new found knowledge
+      let _ = match msg.edit("", |mut e| { e = e
+        .author(|mut a| {
+          a = a.name("Kitsu.io");
+          // Use kitsu's android favicon as an avatar (This might break in the future)
+          a = a.icon_url("https://kitsu.io/android-chrome-192x192.png");
+          a
+        })
+        .url(&user.url())
+        .colour(Colour::from_rgb(51,37,50))
+        .description(&user_about)
+        .title(&user_name)
+        .field(|f| f
+          .inline(true)
+          .name("Gender")
+          .value(&user_gender)
+          )
+        .field(|f| f
+          .inline(true)
+          .name("Birthday")
+          .value(&user_birthday)
+          )
+        .field(|f| f
+          .inline(true)
+          .name("Followers")
+          .value(&user_followers)
+          )
+        .field(|f| f
+          .inline(true)
+          .name("Following")
+          .value(&user_following)
+          )
+        .field(|f| f
+          .inline(true)
+          .name("Bio")
+          .value(&user_bio)
+          );
+        if user_cover_image != "N/A" {
+          e = e.image(user_cover_image);
+        }
+        if user_avatar != "N/A" {
+          e = e.thumbnail(user_avatar)
         }
         e}){
         Ok(msg) => msg,

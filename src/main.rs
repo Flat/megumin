@@ -53,7 +53,7 @@ fn main() {
         // Add the uptime as the time we connected succesfully
         let mut data = context.data.lock().unwrap();
         let uptime = data.get_mut::<Uptime>().unwrap();
-        uptime.entry(String::from("boot")).or_insert(UTC::now());
+        uptime.entry(String::from("boot")).or_insert_with(| | {UTC::now()});
     });
 
     // Setup bot framework with supported commands
@@ -78,6 +78,11 @@ fn main() {
                     c.exec(commands::weeb::manga)
                         .min_args(1)
                         .desc("Searches kitsu.io for the specified manga")
+                })
+                .command("kitsuprofile", |c| {
+                    c.exec(commands::weeb::kitsu_user)
+                     .min_args(1)
+                     .desc("Seaches kitsu.io for the specified user")
                 })
             })
             .group("General", |g| {

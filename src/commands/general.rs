@@ -4,8 +4,8 @@ use chrono::*;
 use Uptime;
 
 // Displays various information about this bot software
-command!(about(context) {
-  let _ = context.send_message(|m| m
+command!(about(_context, msg, _args) {
+  let _ = msg.channel_id.send_message(|m| m
       .embed(|e| e
         .url("https://github.com/flat/megumin")
         .colour(Colour::new(0xC4444E))
@@ -28,7 +28,7 @@ command!(about(context) {
 });
 
 // Displays information about the current bot instance
-command!(info(context) {
+command!(info(context, msg, _args) {
   let cache = match CACHE.read() {
     Ok(cache) => cache,
     Err(why) => {
@@ -43,19 +43,19 @@ command!(info(context) {
 
   if let Some(boottime) = uptime.get("boot") {
     let now = UTC::now();
-    let duration = now - boottime.to_owned();
+    let duration = now.signed_duration_since(boottime.to_owned());
     // Transform duration into days, hours, minutes, seconds.
     // There's probably a cleaner way to do this.
     let mut seconds = duration.num_seconds();
     let mut minutes = seconds / 60;
-    seconds = seconds % 60;
+    seconds %= 60;
     let mut hours = minutes / 60;
-    minutes = minutes % 60;
+    minutes %= 60;
     let days = hours / 24;
-    hours = hours % 24;
+    hours %= 24;
 
 
-    let _ = context.send_message(|m| m
+    let _ = msg.channel_id.send_message(|m| m
       .embed(|e| e
         .url(&format!(
           // Link to invite bot through discord api using bot's id
@@ -88,7 +88,7 @@ command!(info(context) {
   }
   // If we can't read the context.data give up
   else {
-    let _ = context.say("Unable to get startup time");
+    let _ = msg.channel_id.say("Unable to get startup time");
   }
 
 });

@@ -1,5 +1,5 @@
-use serenity::client::Context;
-use serenity::model::Message;
+use serenity::client::{Context};
+use serenity::model::{Message};
 use preferences::{PreferencesMap, Preferences};
 use std::str::FromStr;
 

@@ -5,8 +5,6 @@ license = "MIT"
 authors = ["Flat <flat@imo.uto.moe>"]
 
 [dependencies]
-log = "*"
-json = "*"
 preferences = "*"
 chrono = "*"
 typemap = "*"
