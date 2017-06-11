@@ -6,11 +6,11 @@ A general purpose discord bot built with the [serenity](https://github.com/zeyla
 
 | Weeb | Administration | General | Audio |
 | :---: | :---: | :---: | :---: |
-| anime | nogame | about | play |
+| anime | clearplaying | about | play |
 | manga | setowner | help | stop |
 | kitsuprofile | owner | info |
 | | disown | | |
-| | setgame | | | 
+| | playing | | | 
 
 ## Building
 

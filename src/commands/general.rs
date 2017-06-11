@@ -1,10 +1,18 @@
-use serenity::client::CACHE;
-use serenity::utils::Colour;
 use chrono::*;
+use serenity::CACHE;
+use serenity::model::permissions::*;
+use serenity::utils::Colour;
 use Uptime;
 
 // Displays various information about this bot software
 command!(about(_context, msg, _args) {
+  let cache = match CACHE.read() {
+      Ok(cache) => cache,
+      Err(why) => {
+      println!("Failed to read cache: {:?}", why);
+      return Err(why.to_string());
+    },
+  };
   let _ = msg.channel_id.send_message(|m| m
       .embed(|e| e
         .url("https://github.com/flat/megumin")
@@ -15,7 +23,7 @@ command!(about(_context, msg, _args) {
         .author(|mut a| {
           a = a.name(&::BOT_NAME);
           // Bot avatar URL
-          a = a.icon_url("https://files.catbox.moe/r8r2h1.png");
+          a = a.icon_url(&cache.user.face());
           a
         })
         .field(|f| f
@@ -24,7 +32,7 @@ command!(about(_context, msg, _args) {
           .value(&::AUTHORS)
           )
         )
-        );
+  );
 });
 
 // Displays information about the current bot instance
@@ -54,21 +62,23 @@ command!(info(context, msg, _args) {
     let days = hours / 24;
     hours %= 24;
 
+    let invite_url = match cache.user.invite_url(READ_MESSAGES | SEND_MESSAGES | EMBED_LINKS | ADD_REACTIONS | READ_MESSAGE_HISTORY | USE_EXTERNAL_EMOJIS | CONNECT | USE_VAD | CHANGE_NICKNAME) {
+      Ok(s) => s,
+      Err(why) => {
+        println!("Failed to get invite url: {:?}", why);
+        return Err(why.to_string());
+      } 
+    };
 
     let _ = msg.channel_id.send_message(|m| m
       .embed(|e| e
-        .url(&format!(
-          // Link to invite bot through discord api using bot's id
-          "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=0"
-          , cache.user.id))
+        .url(&invite_url)
         .colour(Colour::fabled_pink())
         .description(&format!("I'm currently running {} - {}", &::BOT_NAME, &::VERSION))
         .title("Invite me to your server!")
         .author(|mut a| {
           a = a.name(&cache.user.name);
-          if let Some(avatar) = cache.user.avatar_url() {
-            a = a.icon_url(&avatar);
-          }
+          a = a.icon_url(&cache.user.face());
           a
         })
         .field(|f| f

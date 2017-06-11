@@ -58,7 +58,7 @@ command!(anime(_context, message, args) {
       };
 
       // Update the message with our new found knowledge
-      let _ = match msg.edit("", |mut e| { e = e
+      let _ = match msg.edit(|mut m| { m = m.content(""); m = m.embed(|mut e| { e = e
         .author(|mut a| {
           a = a.name("Kitsu.io");
           // Use kitsu's android favicon as an avatar (This might break in the future)
@@ -111,24 +111,26 @@ command!(anime(_context, message, args) {
         if anime_poster_image != "N/A" {
           e = e.thumbnail(anime_poster_image);
         }
-        e}){
+        e});
+        m
+        }){
         Ok(msg) => msg,
         Err(why) => {
           // Something went wrong creating the embed
           println!("{:?}", why);
-          let _ = msg.edit("Failed to submit embedded message.", |e| e);
+          let _ = msg.edit(|m| m.content("Failed to submit embedded message."));
           return Ok(());
         },
       };
 
     } else {
       // Something went wrong getting the first result
-      let _ = msg.edit("Failed to retrieve information.", |e| e);
+      let _ = msg.edit(|m| m.content("Failed to retrieve information."));
     }
 }
   else {
     // Something went wrong with the request to the api
-    let _ = msg.edit("Failed to retrieve information.", |e| e);
+    let _ = msg.edit(|m| m.content("Failed to retrieve information."));
   }
 });
 
@@ -193,11 +195,11 @@ command!(manga(_context, message, args){
       };
 
       // Update the message with our new found knowledge
-      let _ = match msg.edit("", |mut e| { e = e
+      let _ = match msg.edit(|mut m| { m = m.content(""); m = m.embed(|mut e| { e = e
         .author(|mut a| {
           a = a.name("Kitsu.io");
           // Use kitsu's android favicon as an avatar (This might break in the future)
-          a = a.icon_url("https://kitsu.io/android-chrome-192x192.png");
+          a = a.icon_url("https://kitsu.io/android-chrome-512x512-5b1696ec45da4d52b7dcdedb969ffa4e.png");
           a
         })
         .url(&manga.url())
@@ -243,26 +245,28 @@ command!(manga(_context, message, args){
           e = e.image(&manga_cover_image);
         }
         if manga_poster_image != "N/A" {
-          e = e.thumbnail(manga_poster_image)
+          e = e.thumbnail(manga_poster_image);
         }
-        e}){
+        e});
+        m
+        }) {
         Ok(msg) => msg,
         Err(why) => {
           // Something went wrong creating the embed
           println!("{:?}", why);
-          let _ = msg.edit("Failed to submit embedded message.", |e| e);
+          let _ = msg.edit(|m| m.content("Failed to submit embedded message."));
           return Ok(());
         },
       };
 
     } else {
       // Something went wrong getting the first result
-      let _ = msg.edit("Failed to retrieve information.", |e| e);
+      let _ = msg.edit(|m| m.content("Failed to retrieve information."));
     }
 }
   else {
     // Something went wrong with the request to the api
-    let _ = msg.edit("Failed to retrieve information.", |e| e);
+    let _ = msg.edit(|m| m.content("Failed to retrieve information."));
   }
 });
 
@@ -318,7 +322,7 @@ command!(kitsu_user(_context, message, args){
 
 
       // Update the message with our new found knowledge
-      let _ = match msg.edit("", |mut e| { e = e
+      let _ = match msg.edit(|mut m| { m = m.content(""); m = m.embed(|mut e| { e = e
         .author(|mut a| {
           a = a.name("Kitsu.io");
           // Use kitsu's android favicon as an avatar (This might break in the future)
@@ -360,23 +364,25 @@ command!(kitsu_user(_context, message, args){
         if user_avatar != "N/A" {
           e = e.thumbnail(user_avatar)
         }
-        e}){
+        e});
+        m
+        }){
         Ok(msg) => msg,
         Err(why) => {
           // Something went wrong creating the embed
           println!("{:?}", why);
-          let _ = msg.edit("Failed to submit embedded message.", |e| e);
+          let _ = msg.edit(|m| m.content("Failed to submit embedded message."));
           return Ok(());
         },
       };
 
     } else {
       // Something went wrong getting the first result
-      let _ = msg.edit("Failed to retrieve information.", |e| e);
+      let _ = msg.edit(|m| m.content("Failed to retrieve information."));
     }
 }
   else {
     // Something went wrong with the request to the api
-    let _ = msg.edit("Failed to retrieve information.", |e| e);
+    let _ = msg.edit(|m| m.content("Failed to retrieve information."));
   }
 });

@@ -5,15 +5,20 @@ license = "MIT"
 authors = ["Flat <flat@imo.uto.moe>"]
 
 [dependencies]
-preferences = "*"
-chrono = "*"
-typemap = "*"
-regex = "*"
+app_dirs = "~1.1"
+chrono = "~0.3"
+regex = "~0.2"
+serde = "~1.0"
+serde_derive = "~1.0"
+serde_json = "~1.0"
+typemap = "~0.3"
+
 [dependencies.kitsu_io]
-version = "*"
+version = "~0.1"
 git = "https://github.com/zeyla/kitsu.rs.git"
 
 [dependencies.serenity]
 version = "*"
-git = "https://github.com/zeyla/serenity.rs.git"
-features = ["framework", "cache", "voice"]
+#git = "https://github.com/zeyla/serenity.rs.git"
+path = "../serenity"
+features = ["framework", "cache"]

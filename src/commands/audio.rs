@@ -19,7 +19,7 @@ command!(play(context, message, args){
   };
 
   let mut shard = context.shard.lock().unwrap();
-  shard.manager.join(Some(guild_id), channel_id);
+  shard.manager.join(guild_id, channel_id);
 
 
 

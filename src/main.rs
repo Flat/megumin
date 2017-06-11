@@ -1,15 +1,19 @@
 #[macro_use]
 extern crate serenity;
-extern crate preferences;
+extern crate app_dirs;
 extern crate chrono;
 extern crate typemap;
 extern crate kitsu_io;
 extern crate regex;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
+extern crate serde_json;
 
 use serenity::Client;
 use serenity::ext::framework::help_commands;
 use chrono::*;
-use preferences::AppInfo;
+use app_dirs::*;
 use std::env;
 use std::collections::HashMap;
 use typemap::Key;
@@ -33,14 +37,11 @@ const APP_INFO: AppInfo = AppInfo {
     name: BOT_NAME,
     author: AUTHORS,
 };
-const PREF_OWNER_KEY: &'static str = "bot-settings/owner";
-#[allow(dead_code)] // TODO: implement preferences
-const PREF_KEY: &'static str = "bot-settings/preferences";
 
 fn main() {
     // Get our bot token from the environment expected as DISCORD_TOKEN
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
-    let mut client = Client::login_bot(&token);
+    let mut client = Client::new(&token);
 
     // Initiate our struct into the context.data
     {
@@ -62,7 +63,6 @@ fn main() {
         f.configure(|c| {
                 c.allow_whitespace(true)
                     .on_mention(true)
-                    .rate_limit_message("Try this again in `%time%` seconds.")
                     .prefix("%")
             })
             .after(|_, _, command_name, error| match error {
@@ -106,31 +106,26 @@ fn main() {
                         c.exec(commands::admin::view_owner)
                             .desc("Returns the user id of the owner of this bot")
                     })
-                    .command("disown", |c| {
-                        c.exec(commands::admin::disown)
-                            .check(util::owner_check)
-                            .desc("Removes the owner from the bot so a new owner can be set.")
-                    })
-                    .command("setgame", |c| {
+                    .command("playing", |c| {
                         c.exec(commands::admin::set_game)
                             .check(util::owner_check)
                             .min_args(1)
                     })
-                    .command("nogame", |c| {
+                    .command("clearplaying", |c| {
                         c.exec(commands::admin::no_game)
                             .check(util::owner_check)
                     })
             })
-            .group("Audio", |g| {
-                g.command("play", |c| {
-                        c.exec(commands::audio::play)
-                            .desc("Plays the given youtube or soundcloud url")
-                    })
-                    .command("stop", |c| {
-                        c.exec(commands::audio::stop)
-                            .desc("stops the currently playing music")
-                    })
-            })
+            // .group("Audio", |g| {
+            //     g.command("play", |c| {
+            //             c.exec(commands::audio::play)
+            //                 .desc("Plays the given youtube or soundcloud url")
+            //         })
+            //         .command("stop", |c| {
+            //             c.exec(commands::audio::stop)
+            //                 .desc("stops the currently playing music")
+            //         })
+            // })
     });
 
     if let Err(why) = client.start() {
