@@ -19,6 +19,5 @@ git = "https://github.com/zeyla/kitsu.rs.git"
 
 [dependencies.serenity]
 version = "*"
-#git = "https://github.com/zeyla/serenity.rs.git"
-path = "../serenity"
+git = "https://github.com/zeyla/serenity.rs.git"
 features = ["framework", "cache"]
